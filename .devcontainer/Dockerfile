@@ -17,32 +17,21 @@ RUN python -m pip install --upgrade pip
 # Install PyTorch 2.0.1 (CUDA 11.8)
 RUN pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 torchaudio==2.0.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
 
-# Install MMEngine, MMCV and MMDetection using MIM
-RUN pip install -U \
-    openmim \
-    tqdm
-RUN mim install mmengine
-RUN mim install 'mmcv==v2.1.0'
-RUN mim install 'mmdet==v3.2.0'
+RUN pip install -U tqdm
 
-# Add user dmaji and set permissions
-RUN useradd -m -s /bin/bash dmaji && \
-    echo "dmaji ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
-    chown -R dmaji: /home/dmaji
+# Add user ubuntu and set permissions
+RUN useradd -m -s /bin/bash ubuntu && \
+    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    chown -R ubuntu: /home/ubuntu
 
 # Add bashrc
-COPY ./.devcontainer/.bashrc /home/dmaji/.bashrc
-RUN chown dmaji: /home/dmaji/.bashrc
+COPY ./.devcontainer/.bashrc /home/ubuntu/.bashrc
+RUN chown ubuntu: /home/ubuntu/.bashrc
 
-# Copy entrypoint script
-COPY ./.devcontainer/entrypoint.sh /home/dmaji/entrypoint.sh
-RUN chown dmaji: /home/dmaji/entrypoint.sh
-RUN chmod +x /home/dmaji/entrypoint.sh
-
-# Switch to user dmaji
-USER dmaji
+# Switch to user ubuntu
+USER ubuntu
 
 # Set working directory
-WORKDIR /home/dmaji
+WORKDIR /home/ubuntu
 
 CMD ["/bin/bash"]
