@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install system packages
 RUN apt-get update && apt-get install -y \
     git wget sudo nano curl unzip build-essential cmake ninja-build \
-    python3 python3-pip python3-dev python-is-python3 \
+    python3 python3-pip python3-dev python-is-python3 python3-tk\
     libglib2.0-0 libsm6 libxext6 libxrender-dev \
     libgl1-mesa-glx libgl1-mesa-dri ffmpeg \ 
     && rm -rf /var/lib/apt/lists/*
@@ -18,6 +18,9 @@ RUN python -m pip install --upgrade pip
 RUN pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 torchaudio==2.0.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
 
 RUN pip install -U tqdm matplotlib
+
+# Install transformers from Hugging Face
+RUN pip install transformers tiktoken timm
 
 # Add user ubuntu and set permissions
 RUN useradd -m -s /bin/bash ubuntu && \

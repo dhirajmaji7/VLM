@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
+from torchvision import transforms
+
 import os
 from PIL import Image
 import matplotlib 
@@ -8,11 +10,12 @@ import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')  # Use TkAgg backend for plotting
 
 class CLIPDataset(Dataset):
-    def __init__(self, image_dir, captions_filepath, transform=None):
+    def __init__(self, image_dir, captions_filepath, transform=None, tokenizer=None):
         super().__init__()
         self.image_dir = image_dir
         self.captions_filepath = captions_filepath
         self.transform = transform
+        self.tokenizer = tokenizer
         
         self.captions_dict = {}
         self.images = {}
@@ -25,7 +28,10 @@ class CLIPDataset(Dataset):
     def __getitem__(self, idx):
         image_fname = list(self.images.keys())[idx]
         img = self.images[image_fname]
+        img = transforms.ToTensor()(img)
         caption = self.captions_dict.get(image_fname, [])[0]  # TODO: Handle multiple captions
+        if self.tokenizer:
+            caption = self.tokenizer(caption)
         return img, caption
 
     def read_captions(self, filename):
@@ -50,11 +56,11 @@ class CLIPDataset(Dataset):
                 self.images[fname] = image
 
 
-clipdataset = CLIPDataset(image_dir='../Images',captions_filepath='../captions.txt', transform=None)
-img, caption = clipdataset.__getitem__(7)
-print(caption)
-plt.imshow(img)  # Convert from CxHxW to HxWxC for plotting
-plt.axis('off')  # Hide axes
-plt.show()
+# clipdataset = CLIPDataset(image_dir='../Images',captions_filepath='../captions.txt', transform=None)
+# img, caption = clipdataset.__getitem__(7)
+# print(caption)
+# plt.imshow(img)  # Convert from CxHxW to HxWxC for plotting
+# plt.axis('off')  # Hide axes
+# plt.show()
 
 
