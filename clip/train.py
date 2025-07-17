@@ -19,11 +19,11 @@ class Trainer:
         self.tokenizer = tokenizer
 
         self.train_dataloader = torch.utils.data.DataLoader(
-            CLIPDataset(image_dir='../Images', captions_filepath='../captions.txt', transform=None, tokenizer=self.tokenize_text),
+            CLIPDataset(image_dir='../Images', captions_filepath='../captions.txt', tokenizer=self.tokenize_text),
             batch_size=32, shuffle=True, num_workers=4
         )
         self.test_dataloader = torch.utils.data.DataLoader(
-            CLIPDataset(image_dir='../Images', captions_filepath='../captions.txt', transform=None, tokenizer=self.tokenize_text),
+            CLIPDataset(image_dir='../Images', captions_filepath='../captions.txt', tokenizer=self.tokenize_text),
             batch_size=32, shuffle=False, num_workers=4
         )
 

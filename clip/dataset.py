@@ -10,12 +10,16 @@ import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')  # Use TkAgg backend for plotting
 
 class CLIPDataset(Dataset):
-    def __init__(self, image_dir, captions_filepath, transform=None, tokenizer=None):
+    def __init__(self, image_dir, captions_filepath, tokenizer=None):
         super().__init__()
         self.image_dir = image_dir
         self.captions_filepath = captions_filepath
-        self.transform = transform
         self.tokenizer = tokenizer
+        self.transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+        ])
         
         self.captions_dict = {}
         self.images = {}
@@ -28,7 +32,6 @@ class CLIPDataset(Dataset):
     def __getitem__(self, idx):
         image_fname = list(self.images.keys())[idx]
         img = self.images[image_fname]
-        img = transforms.ToTensor()(img)
         caption = self.captions_dict.get(image_fname, [])[0]  # TODO: Handle multiple captions
         if self.tokenizer:
             caption = self.tokenizer(caption)
@@ -51,8 +54,7 @@ class CLIPDataset(Dataset):
         for fname in os.listdir(self.image_dir):
             if fname.lower().endswith('.jpg'):
                 image = Image.open(os.path.join(self.image_dir, fname)).convert('RGB')
-                if self.transform:
-                    image = self.transform(image)
+                image = self.transform(image)
                 self.images[fname] = image
 
 

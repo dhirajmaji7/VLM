@@ -32,8 +32,9 @@ class CLIPImageEncoder(nn.Module):
         self.model.reset_classifier(0) 
 
     def forward(self, x):
-        outputs = self.model(pixel_values=x)
-        return outputs.last_hidden_state[:, 0]  # CLS token
+        features = self.model.forward_features(x)  # shape: (B, num_tokens, dim)
+        cls_token = features[:, 0]  # CLS token is at index 0
+        return cls_token
 
 
 class CLIPTextEncoder(nn.Module):
