@@ -28,7 +28,7 @@ class CLIPModel(nn.Module):
 class CLIPImageEncoder(nn.Module):
     def __init__(self):
         super(CLIPImageEncoder, self).__init__()
-        self.model = timm.create_model('vit_tiny_patch16_224', pretrained=True)
+        self.model = timm.create_model('vit_tiny_patch16_224', pretrained=False)
         self.model.reset_classifier(0) 
 
     def forward(self, x):
@@ -62,16 +62,15 @@ class CLIPTextEncoder(nn.Module):
         x = x.permute(1, 0, 2)  # [batch_size, seq_len, width]
         x = self.ln_final(x)
 
-        # Take the final [EOS] token embedding (assumes EOS token is at end)
-        eos_embeddings = x[torch.arange(x.shape[0]), token_ids.argmax(dim=-1)]  # [batch_size, width]
-
-        return eos_embeddings  # [batch_size, width]
+        # Get CLS token embedding (final layer, first token)
+        cls_embedding = x[:, 0, :]  # (B, D)
+        return cls_embedding  # (B, D)
 
 
 class CLIP(nn.Module):
     def __init__(self, vocab_size, image_dim=768, caption_dim=512, embedding_dim=512):
         super(CLIP, self).__init__()
-        self.text_encoder = CLIPTextEncoder(vocab_size=vocab_size)
+        self.text_encoder = CLIPTextEncoder(vocab_size=vocab_size, context_length=25)
         self.image_encoder = CLIPImageEncoder()
         self.model = CLIPModel(self.text_encoder, self.image_encoder, image_dim, caption_dim, embedding_dim)
 
