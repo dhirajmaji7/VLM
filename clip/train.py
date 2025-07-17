@@ -6,6 +6,7 @@ import tiktoken
 from dataset import CLIPDataset
 from model import CLIP
 from loss import InfoNCECriterion
+from utils import timeit
 
 class Trainer:
     def __init__(self, model, criterion, optimizer, device, tokenizer):
@@ -33,6 +34,7 @@ class Trainer:
         padded = token_ids + [0] * (77 - len(token_ids))
         return torch.tensor(padded, dtype=torch.long)
 
+    @timeit
     def train_step(self, images, token_ids):
         self.model.train()
         images = images.to(self.device)
@@ -49,9 +51,11 @@ class Trainer:
     
     def run(self, num_epochs):
         for epoch in range(num_epochs):
-            for images, token_ids in self.train_dataloader:
+            for i, (images, token_ids) in enumerate(self.train_dataloader):
                 loss = self.train_step(images, token_ids)
-                print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {loss:.4f}")
+                if (i + 1) % 10 == 0:
+                    print(f"Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{len(self.train_dataloader)}], Loss: {loss:.4f}")
+            print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {loss:.4f}")
 
 
 if __name__ ==  "__main__":
