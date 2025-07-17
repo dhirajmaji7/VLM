@@ -58,25 +58,15 @@ class Trainer:
             print(f"Epoch [{epoch+1}/{self.num_epochs}], Loss: {loss:.4f}")
 
 
-def count_trainable_params(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
-
-def count_params(model):
-    return sum(p.numel() for p in model.parameters())
-
 if __name__ ==  "__main__":
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
 
     # Initialize model components
-    tokenizer = CLIPTextTokenizer(context_length=25) # Set context length to 25
+    tokenizer = CLIPTextTokenizer(context_length=25)
     model = CLIP(vocab_size=tokenizer.n_vocab, image_dim=192, caption_dim=512, embedding_dim=512)
-    print(f"Number of trainable parameters: {count_trainable_params(model)}")
-    print(f"Total parameters: {count_params(model)}")
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
     criterion = InfoNCECriterion()
-
-    print(f"Vocabulary size: {tokenizer.n_vocab}")
 
     trainer = Trainer(model, criterion, optimizer, device, tokenizer, num_epochs=10)
     print("Starting training...")

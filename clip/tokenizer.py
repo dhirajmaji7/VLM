@@ -2,7 +2,7 @@ import torch
 import tiktoken
 
 class CLIPTextTokenizer:
-    def __init__(self,context_length=77):
+    def __init__(self, context_length=77):
         self.tokenizer = tiktoken.get_encoding("gpt2")
         self.bos_token_id = 49406  # <|startoftext|> used in CLIP
         self.eos_token_id = 49407  # <|endoftext|> used in CLIP
