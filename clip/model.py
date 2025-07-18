@@ -16,9 +16,9 @@ class CLIPModel(nn.Module):
         text_features = self.text_encoder(token_ids)    # B,T_f
         img_embeddings = self.image_projection(image_features) # B,T_e
         text_embeddings = self.caption_projection(text_features) # B,T_e
-
-        img_embeddings = F.normalize(img_embeddings, p=2, dim=-1) # B,T_e
-        text_embeddings = F.normalize(text_embeddings, p=2, dim=-1) # B,T_e
+        # print("img_embeddings", img_embeddings.shape, "text_embeddings", text_embeddings.shape)
+        # img_embeddings = F.normalize(img_embeddings, p=2, dim=-1) # B,T_e
+        # text_embeddings = F.normalize(text_embeddings, p=2, dim=-1) # B,T_e
 
         logits = torch.matmul(img_embeddings, text_embeddings.t())* torch.exp(self.temperature) # B,B
 

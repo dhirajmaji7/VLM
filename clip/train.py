@@ -34,7 +34,8 @@ class Trainer:
         token_ids = token_ids.to(self.device)
         #print("token id",token_ids)
         logits = self.model(images, token_ids)
-        loss = self.criterion(logits)
+        target = torch.arange(logits.size(0), device=self.device)  # B
+        loss = self.criterion(logits, target)
 
         self.optimizer.zero_grad()
         loss.backward()
