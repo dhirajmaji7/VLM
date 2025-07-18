@@ -26,8 +26,8 @@ class CLIPConfig():
 
     # Training parameters
     batch_size: int = 256
+    num_workers: int = 4  # Number of workers for data loading
     num_epochs: int = 50
     learning_rate: float = 1e-4
     weight_decay: float = 1e-5
-    num_workers: int = 4  # Number of workers for data loading
     log_interval: int = 10  # Interval for logging training progress

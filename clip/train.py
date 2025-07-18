@@ -1,43 +1,45 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.data import DataLoader
 
 from dataset import CLIPDataset
-from model import CLIP
-from tokenizer import CLIPTextTokenizer
-from loss import InfoNCECriterion
+from config import CLIPConfig
 from utils import timeit
 
 class Trainer:
-    def __init__(self, model, criterion, optimizer, device, tokenizer, num_epochs):
+    def __init__(self, config, model, criterion, optimizer, device, tokenizer):
+        self.config = config
         self.device = device
         self.model = model.to(self.device)
         self.criterion = criterion.to(self.device)
         self.optimizer = optimizer
-        self.num_epochs = num_epochs
-
-        # Initialize OpenAI's GPT-2 BPE tokenizer
         self.tokenizer = tokenizer
+        self.num_epochs = config.num_epochs
 
-        self.train_dataloader = torch.utils.data.DataLoader(
-            CLIPDataset(image_dir='../Images', captions_filepath='../captions.txt', tokenizer=self.tokenizer.tokenize_text),
-            batch_size=32, shuffle=True, num_workers=4
+        self.train_dataloader = DataLoader(
+            CLIPDataset(config, tokenizer=self.tokenizer.tokenize_text),
+            batch_size=config.batch_size, 
+            shuffle=True, 
+            num_workers=config.num_workers
         )
-        self.test_dataloader = torch.utils.data.DataLoader(
-            CLIPDataset(image_dir='../Images', captions_filepath='../captions.txt', tokenizer=self.tokenizer.tokenize_text),
-            batch_size=32, shuffle=False, num_workers=4
+        self.val_dataloader = DataLoader(
+            CLIPDataset(config, tokenizer=self.tokenizer.tokenize_text),
+            batch_size=config.batch_size, 
+            shuffle=False, 
+            num_workers=config.num_workers
         )
 
     def train_step(self, images, token_ids):
         images = images.to(self.device)
         token_ids = token_ids.to(self.device)
         logits = self.model(images, token_ids)
-        target = torch.arange(logits.size(0), device=self.device)  # B
-        loss = self.criterion(logits, target)
+        loss = self.criterion(logits)
 
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+
         return loss.item()
     
     @timeit
@@ -54,20 +56,4 @@ class Trainer:
         for epoch in range(self.num_epochs):
             loss = self.train_epoch(epoch)
             print(f"Epoch [{epoch+1}/{self.num_epochs}], Loss: {loss:.4f}")
-
-
-if __name__ ==  "__main__":
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Using device: {device}")
-
-    # Initialize model components
-    tokenizer = CLIPTextTokenizer(context_length=25)
-    model = CLIP(vocab_size=tokenizer.n_vocab, image_dim=192, caption_dim=512, embedding_dim=512)
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
-    criterion = InfoNCECriterion()
-
-    trainer = Trainer(model, criterion, optimizer, device, tokenizer, num_epochs=50)
-    print("Starting training...")
-    trainer.run()
-    
 
