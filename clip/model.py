@@ -17,10 +17,10 @@ class CLIPModel(nn.Module):
         img_embeddings = self.image_projection(image_features) # B,T_e
         text_embeddings = self.caption_projection(text_features) # B,T_e
 
-        img_embeddings = F.normalize(img_embeddings, p=2, dim=-1) # B,T_e
-        text_embeddings = F.normalize(text_embeddings, p=2, dim=-1) # B,T_e
+        # img_embeddings = F.normalize(img_embeddings, p=2, dim=-1) # B,T_e
+        # text_embeddings = F.normalize(text_embeddings, p=2, dim=-1) # B,T_e
 
-        logits = torch.matmul(img_embeddings, text_embeddings.t())* torch.exp(self.temperature) # B,B
+        logits = torch.matmul(img_embeddings, text_embeddings.T)* torch.exp(self.temperature) # B,B
 
         return logits
 
@@ -28,7 +28,7 @@ class CLIPModel(nn.Module):
 class CLIPImageEncoder(nn.Module):
     def __init__(self):
         super(CLIPImageEncoder, self).__init__()
-        self.model = timm.create_model('vit_tiny_patch16_224', pretrained=False)
+        self.model = timm.create_model('vit_tiny_patch16_224', pretrained=True)
         self.model.reset_classifier(0) 
 
     def forward(self, x):
@@ -43,7 +43,11 @@ class CLIPTextEncoder(nn.Module):
         self.token_embedding = nn.Embedding(vocab_size, width)
         self.positional_embedding = nn.Parameter(torch.empty(context_length, width))
         self.transformer = nn.TransformerEncoder(
-            nn.TransformerEncoderLayer(d_model=width, nhead=heads),
+            nn.TransformerEncoderLayer(d_model=width, 
+                                       nhead=heads,
+                                       dim_feedforward=width * 4,
+                                       activation='gelu',
+                                       batch_first=True),
             num_layers=layers
         )
         self.ln_final = nn.LayerNorm(width)
@@ -56,15 +60,26 @@ class CLIPTextEncoder(nn.Module):
     def forward(self, token_ids):
         # token_ids: [batch_size, seq_len]
         x = self.token_embedding(token_ids)  # [batch_size, seq_len, width]
-        x = x + self.positional_embedding[:x.size(1), :]
-        x = x.permute(1, 0, 2)  # [seq_len, batch_size, width]
+        x = x + self.positional_embedding
         x = self.transformer(x)  # [seq_len, batch_size, width]
-        x = x.permute(1, 0, 2)  # [batch_size, seq_len, width]
         x = self.ln_final(x)
 
         # Get CLS token embedding (final layer, first token)
-        cls_embedding = x[:, 0, :]  # (B, D)
-        return cls_embedding  # (B, D)
+        # cls_embedding = x[:, 0, :]  # (B, D)
+        # return cls_embedding  # (B, D)
+
+        eot_token_id = 49407
+        # Find the index of EOT in each sequence
+        eot_mask = (token_ids == eot_token_id)  # (B, T)
+        assert eot_mask.any(dim=1).all(), "EOT token not found in every sequence."
+
+        # Get the index of the last EOT token in each sequence
+        eot_indices = eot_mask.float().argmax(dim=1)  # (B,)
+        
+        # Gather the features at the EOT token positions
+        batch_size = x.size(0)
+        features = x[torch.arange(batch_size), eot_indices]  # (B, D)
+        return features
 
 
 class CLIP(nn.Module):
