@@ -25,9 +25,11 @@ class CLIPConfig():
     eos_token_id: int = 49407  # <|endoftext|> token ID
 
     # Training parameters
-    batch_size: int = 256
+    batch_size: int = 128
     num_workers: int = 4  # Number of workers for data loading
     num_epochs: int = 50
     learning_rate: float = 1e-4
     weight_decay: float = 1e-5
-    log_interval: int = 10  # Interval for logging training progress
+    runs_dir: str = 'runs'
+    checkpoint_dir: str = 'checkpoints'
+    checkpoint_interval: int = 10

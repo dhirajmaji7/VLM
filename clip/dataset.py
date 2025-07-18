@@ -13,10 +13,11 @@ matplotlib.use('TkAgg')  # Use TkAgg backend for plotting
 from config import CLIPConfig
 
 class CLIPDataset(Dataset):
-    def __init__(self, config, tokenizer):
+    def __init__(self, config, split, tokenizer):
         super().__init__()
         self.config = config
         random.seed(config.random_seed)
+        self.split = split
         self.image_dir = config.image_dir
         self.captions_filepath = config.captions_filepath
         self.tokenizer = tokenizer
@@ -77,5 +78,5 @@ def visualize_sample(clipdataset, idx):
 
 if __name__ == "__main__":
     config = CLIPConfig()
-    clipdataset = CLIPDataset(config=config, tokenizer=None)
+    clipdataset = CLIPDataset(config=config, split='train', tokenizer=None)
     visualize_sample(clipdataset, idx=0)
