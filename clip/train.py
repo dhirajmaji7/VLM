@@ -12,8 +12,7 @@ class Trainer:
     def __init__(self, model, criterion, optimizer, device, tokenizer, num_epochs):
         self.device = device
         self.model = model.to(self.device)
-        #self.criterion = criterion.to(self.device)
-        self.criterion = F.cross_entropy
+        self.criterion = criterion.to(self.device)
         self.optimizer = optimizer
         self.num_epochs = num_epochs
 
@@ -32,7 +31,6 @@ class Trainer:
     def train_step(self, images, token_ids):
         images = images.to(self.device)
         token_ids = token_ids.to(self.device)
-        #print("token id",token_ids)
         logits = self.model(images, token_ids)
         target = torch.arange(logits.size(0), device=self.device)  # B
         loss = self.criterion(logits, target)
@@ -40,7 +38,6 @@ class Trainer:
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-
         return loss.item()
     
     @timeit
@@ -69,7 +66,7 @@ if __name__ ==  "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
     criterion = InfoNCECriterion()
 
-    trainer = Trainer(model, criterion, optimizer, device, tokenizer, num_epochs=10)
+    trainer = Trainer(model, criterion, optimizer, device, tokenizer, num_epochs=50)
     print("Starting training...")
     trainer.run()
     
