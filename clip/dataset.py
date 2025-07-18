@@ -10,7 +10,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')  # Use TkAgg backend for plotting
 
-from config import CLIPTrainingConfig
+from config import CLIPConfig
 
 class CLIPDataset(Dataset):
     def __init__(self, config, tokenizer):
@@ -76,6 +76,6 @@ def visualize_sample(clipdataset, idx):
     plt.show()
 
 if __name__ == "__main__":
-    config = CLIPTrainingConfig()
+    config = CLIPConfig()
     clipdataset = CLIPDataset(config=config, tokenizer=None)
     visualize_sample(clipdataset, idx=0)
