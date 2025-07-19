@@ -20,9 +20,6 @@ class CLIPConfig():
     image_size: tuple = (224, 224)  # Size to which images will be resized
     random_seed: int = 42
     tokenizer_name: str = 'gpt2'
-    vocab_size: int = 50257  # Default GPT-2 vocab size
-    bos_token_id: int = 49406  # <|startoftext|> token ID
-    eos_token_id: int = 49407  # <|endoftext|> token ID
 
     # Training parameters
     batch_size: int = 128

@@ -13,7 +13,7 @@ if __name__ ==  "__main__":
     # Initialize components
     config = CLIPConfig()
     tokenizer = CLIPTextTokenizer(config)
-    model = CLIPModel(config)
+    model = CLIPModel(config, tokenizer)
     criterion = InfoNCECriterion()
 
     trainer = Trainer(config, model, criterion, device, tokenizer)
