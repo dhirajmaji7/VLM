@@ -76,8 +76,8 @@ class CLIPModel(nn.Module):
         img_embeddings = self.image_projection(img_embeddings) # [B, T_e]
         text_embeddings = self.text_projection(text_embeddings) # [B, T_e]
 
-        # img_embeddings = F.normalize(img_embeddings, p=2, dim=-1) # [B, T_e]
-        # text_embeddings = F.normalize(text_embeddings, p=2, dim=-1) # [B, T_e]
+        # img_embeddings = img_embeddings / img_embeddings.norm(p=2, dim=-1, keepdim=True)
+        # text_embeddings = text_embeddings / text_embeddings.norm(p=2, dim=-1, keepdim=True)
         logits = torch.matmul(img_embeddings, text_embeddings.T) * torch.exp(self.temperature) # [B, B]
         
         return logits

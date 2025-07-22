@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 import os
 import json
 from datetime import datetime
+import wandb
 
 from dataset import CLIPDataset
 from config import CLIPConfig
@@ -85,7 +86,7 @@ class Trainer:
         return total_loss / len(self.val_dataloader)
 
     @timeit
-    def run(self):
+    def run(self, wandb_run):
         print("Starting training...")
         print(f"Using device: {self.device}")
 
@@ -98,6 +99,11 @@ class Trainer:
             print(f"Epoch {epoch + 1} - Validation Loss: {self.val_loss:.4f}")
             self.train_losses.append(self.train_loss)
             self.val_losses.append(self.val_loss)
+            wandb_run.log({
+                "epoch": epoch + 1,
+                "train_loss": self.train_loss,
+                "val_loss": self.val_loss
+            })
 
             # Save best model based on validation loss
             if self.val_loss < self.best_val_loss:
