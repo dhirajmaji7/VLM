@@ -13,9 +13,6 @@
         "source=/dev,destination=/dev,type=bind", // for USB
         "source=/etc/localtime,destination=/etc/localtime,type=bind,readonly"
     ],
-    "forwardPorts": [
-        3000
-    ],
     "securityOpt": [
         "seccomp=unconfined"
     ],
@@ -39,7 +36,8 @@
                 "mhutchie.git-graph",
                 "eamodio.gitlens",
                 "ms-azuretools.vscode-docker",
-                "ms-python.python"
+                "ms-python.python",
+                "ms-toolsai.jupyter"
             ],
             "settings": {
                 "workbench.colorCustomizations": {
