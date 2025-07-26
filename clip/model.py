@@ -20,10 +20,11 @@ class CLIPImageEncoder(nn.Module):
 
 
 class CLIPTextEncoder(nn.Module):
-    def __init__(self, config: CLIPConfig):
+    def __init__(self, config: CLIPConfig, tokenizer):
         super(CLIPTextEncoder, self).__init__()
         self.config = config
-        self.token_embedding = nn.Embedding(config.vocab_size, config.text_embd_dim)
+        self.tokenizer = tokenizer
+        self.token_embedding = nn.Embedding(tokenizer.n_vocab, config.text_embd_dim)
         self.positional_embedding = nn.Parameter(
             torch.empty(config.context_length, config.text_embd_dim))
         self.transformer = nn.TransformerEncoder(
@@ -48,7 +49,7 @@ class CLIPTextEncoder(nn.Module):
         x = self.ln_final(x)  # [batch_size, seq_len, embd_dim]
 
         # Find the index of EOS in each sequence
-        eos_mask = (token_ids == self.config.eos_token_id)
+        eos_mask = (token_ids == self.tokenizer.eos_token_id)  # [batch_size, seq_len, 1]
         assert eos_mask.any(dim=1).all(), "EOS token not found in every sequence."
         # Get the index of the last EOS token in each sequence
         eos_indices = eos_mask.float().argmax(dim=1)
@@ -60,11 +61,11 @@ class CLIPTextEncoder(nn.Module):
 
 
 class CLIPModel(nn.Module):
-    def __init__(self, config: CLIPConfig):
+    def __init__(self, config: CLIPConfig, tokenizer):
         super(CLIPModel, self).__init__()
         self.config = config
         self.image_encoder = CLIPImageEncoder(config)
-        self.text_encoder = CLIPTextEncoder(config)
+        self.text_encoder = CLIPTextEncoder(config, tokenizer)
         self.image_projection = nn.Linear(config.image_embd_dim, config.embedding_dim)
         self.text_projection = nn.Linear(config.text_embd_dim, config.embedding_dim)
         self.temperature = nn.Parameter(torch.ones([]) * config.temperature)  # Learnable temperature parameter
@@ -75,8 +76,8 @@ class CLIPModel(nn.Module):
         img_embeddings = self.image_projection(img_embeddings) # [B, T_e]
         text_embeddings = self.text_projection(text_embeddings) # [B, T_e]
 
-        # img_embeddings = F.normalize(img_embeddings, p=2, dim=-1) # [B, T_e]
-        # text_embeddings = F.normalize(text_embeddings, p=2, dim=-1) # [B, T_e]
+        # img_embeddings = img_embeddings / img_embeddings.norm(p=2, dim=-1, keepdim=True)
+        # text_embeddings = text_embeddings / text_embeddings.norm(p=2, dim=-1, keepdim=True)
         logits = torch.matmul(img_embeddings, text_embeddings.T) * torch.exp(self.temperature) # [B, B]
         
         return logits
