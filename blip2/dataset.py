@@ -39,9 +39,8 @@ class Blip2Dataset(Dataset):
         img = self.transform(img)
         captions = self.captions_dict.get(image_fname, [])
         caption = random.choice(captions) if captions else ""
-        if self.tokenizer:
-            caption = self.tokenizer(caption)
-        return img, caption
+        cls_caption, dec_caption = self.tokenizer(caption)
+        return img, cls_caption, dec_caption
 
     def read_captions(self, filename):
         captions_dict = {}
@@ -76,7 +75,3 @@ def visualize_sample(clipdataset, idx):
     plt.axis('off')
     plt.show()
 
-if __name__ == "__main__":
-    config = Blip2Config()
-    blip2dataset = Blip2Dataset(config=config, split='train', tokenizer=None)
-    visualize_sample(blip2dataset, idx=0)

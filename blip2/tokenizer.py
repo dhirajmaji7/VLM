@@ -23,18 +23,15 @@ class Blip2Tokenizer:
 
         self.context_length = config.context_length
         self.n_vocab = self.tokenizer.vocab_size
+        self.config.vocab_size = self.n_vocab
 
-    def tokenize_text(self, text: str, task: str):
+    def tokenize_text(self, text: str):
         token_ids = self.tokenizer.encode(text)
-        token_ids = self.bos_token_id + token_ids + self.eos_token_id
-        if task == "cls":
-            token_ids = self.cls_token_id + token_ids
-        elif task == "dec":
-            token_ids = self.dec_token_id + token_ids
-        else:
-            raise RuntimeError("Task can be cls or dec only.")
-        padded = token_ids + [self.pad_token_id] * (self.context_length - len(token_ids))
-        return torch.tensor(padded, dtype=torch.long)
+        token_ids = [self.bos_token_id] + token_ids + [self.eos_token_id]
+        padded = token_ids + [self.pad_token_id] * (self.context_length - len(token_ids) - 1)
+        cls_token_ids = [self.cls_token_id] + padded
+        dec_token_ids = [self.dec_token_id] + padded
+        return torch.tensor(cls_token_ids, dtype=torch.long), torch.tensor(dec_token_ids, dtype=torch.long)
 
     def decode(self, token_ids):
         decoded = self.tokenizer.decode(token_ids, skip_special_tokens=True)
