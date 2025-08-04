@@ -20,7 +20,7 @@ RUN pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 torchaudio==2.0.2+c
 RUN pip install -U tqdm matplotlib
 
 # Install transformers from Hugging Face
-RUN pip install transformers tiktoken timm
+RUN pip install transformers tiktoken timm wandb
 
 # Add user ubuntu and set permissions
 RUN useradd -m -s /bin/bash ubuntu && \
