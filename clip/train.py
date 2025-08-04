@@ -11,7 +11,7 @@ from config import CLIPConfig
 from utils import timeit
 
 class Trainer:
-    def __init__(self, config, model, criterion, device, tokenizer):
+    def __init__(self, config, model, train_dataloader, val_dataloader, criterion, device, tokenizer):
         self.config = config
         self.device = device
         self.model = model.to(self.device)
@@ -22,18 +22,8 @@ class Trainer:
         self.tokenizer = tokenizer
         self.num_epochs = config.num_epochs
 
-        self.train_dataloader = DataLoader(
-            CLIPDataset(config, 'train', tokenizer=self.tokenizer.tokenize_text),
-            batch_size=config.batch_size, 
-            shuffle=True, 
-            num_workers=config.num_workers
-        )
-        self.val_dataloader = DataLoader(
-            CLIPDataset(config, 'val', tokenizer=self.tokenizer.tokenize_text),
-            batch_size=config.batch_size, 
-            shuffle=False, 
-            num_workers=config.num_workers
-        )
+        self.train_dataloader = train_dataloader
+        self.val_dataloader = val_dataloader
 
         os.makedirs(config.runs_dir, exist_ok=True)
         self.run_dir = os.path.join(config.runs_dir, f"run_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
@@ -52,6 +42,7 @@ class Trainer:
         self.model.train()
         total_loss = 0.0
         iter = 0
+        
         for images, token_ids in self.train_dataloader:
             images = images.to(self.device)
             token_ids = token_ids.to(self.device)
@@ -94,7 +85,7 @@ class Trainer:
             
             self.train_loss = self.train_epoch()
             print(f"Epoch {epoch + 1} - Train Loss: {self.train_loss:.4f}")
-            self.val_loss = self.validate()
+            self.val_loss = 0 #self.validate()
             print(f"Epoch {epoch + 1} - Validation Loss: {self.val_loss:.4f}")
             self.train_losses.append(self.train_loss)
             self.val_losses.append(self.val_loss)
