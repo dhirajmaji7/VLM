@@ -22,7 +22,7 @@ class Blip2Tokenizer:
         self.dec_token_id = tokenizer.convert_tokens_to_ids(self.dec_token)
 
         self.context_length = config.context_length
-        self.n_vocab = self.tokenizer.vocab_size
+        self.n_vocab = len(tokenizer) 
         self.config.vocab_size = self.n_vocab
 
     def tokenize_text(self, text: str):
