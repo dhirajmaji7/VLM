@@ -1,7 +1,7 @@
 import torch
 from config import Blip2Config
 
-class Blip2Tokenizer:
+class FlanT5Tokenizer:
     def __init__(self, config, tokenizer):
         self.config = config
         self.tokenizer = tokenizer

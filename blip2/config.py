@@ -15,6 +15,6 @@ class Blip2Config:
     num_queries: int = 32
     img_embd_dim: int = 192
     embedding_dim: int = 768
-    lm_embedding_dim: int = 768
+    lm_embedding_dim: int = 512
     num_heads: int = 12
 
