@@ -9,7 +9,8 @@ class Blip2Config:
     random_seed: int = 42
     tokenizer_name: str = 'gpt2'
     context_length: int = 77
-    vocab_size: int = 30000 # updated later from tokenizer
+    t5_vocab_size: int = 30000 # updated later from tokenizer
+    bert_vocab_size: int = 30000 # updated later from tokenizer
 
     batch_size: int = 16
     num_queries: int = 32

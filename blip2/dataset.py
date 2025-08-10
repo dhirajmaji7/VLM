@@ -13,11 +13,12 @@ matplotlib.use('TkAgg')  # Use TkAgg backend for plotting
 from config import Blip2Config
 
 class Blip2Dataset(Dataset):
-    def __init__(self, config, split, tokenizer):
+    def __init__(self, config, split, tokenizer, type):
         super().__init__()
         self.config = config
         random.seed(config.random_seed)
         self.split = split
+        self.tokenizer_type = type
         self.image_dir = config.image_dir
         self.captions_filepath = config.captions_filepath
         self.tokenizer = tokenizer
@@ -39,8 +40,13 @@ class Blip2Dataset(Dataset):
         img = self.transform(img)
         captions = self.captions_dict.get(image_fname, [])
         caption = random.choice(captions) if captions else ""
-        cls_caption, dec_caption = self.tokenizer(caption)
-        return img, cls_caption, dec_caption
+
+        if self.tokenizer_type == "bert":
+            cls_caption, dec_caption = self.tokenizer(caption)
+            return img, cls_caption, dec_caption
+        
+        caption, mask = self.tokenizer(caption)
+        return img, caption, mask
 
     def read_captions(self, filename):
         captions_dict = {}
