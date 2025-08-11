@@ -9,11 +9,13 @@ class Blip2Config:
     random_seed: int = 42
     tokenizer_name: str = 'gpt2'
     context_length: int = 77
-    vocab_size: int = 30000 # updated later from tokenizer
+    t5_vocab_size: int = 30000 # updated later from tokenizer
+    bert_vocab_size: int = 30000 # updated later from tokenizer
 
-    batch_size: int = 1
+    batch_size: int = 16
     num_queries: int = 32
     img_embd_dim: int = 192
     embedding_dim: int = 768
-    lm_embedding_dim: int = 768
+    lm_embedding_dim: int = 512
     num_heads: int = 12
+
