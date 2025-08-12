@@ -133,7 +133,7 @@ if __name__ == "__main__":
     # wandb.config.update(config)
     
     blip2_trainer = Blip2Trainer()
-    blip2_trainer.train_stage_1(num_epochs=20)
+    # blip2_trainer.train_stage_1(num_epochs=20)
     blip2_trainer.train_stage_2(num_epochs=20, checkpoint_path="q_former.pt")
 
     # wandb.finish()
