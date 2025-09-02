@@ -40,13 +40,14 @@ class Blip2Dataset(Dataset):
         img = self.transform(img)
         captions = self.captions_dict.get(image_fname, [])
         caption = random.choice(captions) if captions else ""
+        caption = caption
 
         if self.tokenizer_type == "bert":
             cls_caption, dec_caption = self.tokenizer(caption)
             return img, cls_caption, dec_caption
-        
-        caption, mask = self.tokenizer(caption)
-        return img, caption, mask
+        question_placeholder,mask = self.tokenizer("Question: describe the image. Answer: ")
+        caption,_ = self.tokenizer(caption)
+        return img, question_placeholder, caption, mask
 
     def read_captions(self, filename):
         captions_dict = {}

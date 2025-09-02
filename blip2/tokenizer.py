@@ -37,13 +37,13 @@ class BertTokenizer:
         self.dec_token = "<dec>"
 
         additional_tokens = [self.bos_token, self.cls_token, self.dec_token, self.eos_token]
-        tokenizer.add_special_tokens({'additional_special_tokens': additional_tokens})
+        #tokenizer.add_special_tokens({'additional_special_tokens': additional_tokens})
 
-        self.pad_token_id = tokenizer.convert_tokens_to_ids(self.pad_token)
-        self.eos_token_id = tokenizer.convert_tokens_to_ids(self.eos_token)
-        self.bos_token_id = tokenizer.convert_tokens_to_ids(self.bos_token)
-        self.cls_token_id = tokenizer.convert_tokens_to_ids(self.cls_token)
-        self.dec_token_id = tokenizer.convert_tokens_to_ids(self.dec_token)
+        self.pad_token_id = 100 #tokenizer.convert_tokens_to_ids(self.pad_token)
+        self.eos_token_id = 101 #tokenizer.convert_tokens_to_ids(self.eos_token)
+        self.bos_token_id = 102 # tokenizer.convert_tokens_to_ids(self.bos_token)
+        self.cls_token_id = 103 #tokenizer.convert_tokens_to_ids(self.cls_token)
+        self.dec_token_id = 104 #tokenizer.convert_tokens_to_ids(self.dec_token)
 
         self.context_length = config.context_length
         self.n_vocab = len(tokenizer)
