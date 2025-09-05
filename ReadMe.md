@@ -53,10 +53,10 @@ docker run --rm -it \
 ### BLIP 2 Inference Example
 
 #### Prompt : "Question: describe the image. Answer: "
-<img width="623" height="495" alt="Screenshot from 2025-09-05 11-49-45" src="https://github.com/user-attachments/assets/c44fbeaa-2402-492b-86b8-b3cd3d3b2d27" />
+<img width="981" height="517" alt="Screenshot from 2025-09-05 11-49-45" src="https://github.com/user-attachments/assets/c44fbeaa-2402-492b-86b8-b3cd3d3b2d27" />
 <img width="981" height="517" alt="Screenshot from 2025-09-05 11-51-04" src="https://github.com/user-attachments/assets/cf29a2ac-ab7c-4f17-8a91-3cb3fe4578de" />
 
-<img width="898" height="497" alt="Screenshot from 2025-09-05 11-46-15" src="https://github.com/user-attachments/assets/c18a483c-6f44-452b-9662-7509bc146212" />
+<img width="981" height="517" alt="Screenshot from 2025-09-05 11-46-15" src="https://github.com/user-attachments/assets/c18a483c-6f44-452b-9662-7509bc146212" />
 
 <img width="981" height="517" alt="Screenshot from 2025-09-05 11-51-32" src="https://github.com/user-attachments/assets/878a3961-400d-4918-ad80-a2694a4352d2" />
 <img width="981" height="517" alt="Screenshot from 2025-09-05 11-51-45" src="https://github.com/user-attachments/assets/aadea73b-8a6f-4909-9882-7fc44bdf633d" />
